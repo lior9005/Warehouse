@@ -35,16 +35,13 @@ CollectorVolunteer::CollectorVolunteer(const CollectorVolunteer &origin)
     : Volunteer(origin), coolDown(origin.getCoolDown()), timeLeft(origin.getTimeLeft()) {}       
 
 CollectorVolunteer *CollectorVolunteer::clone() const {
-    return &CollectorVolunteer(this);
+    return &CollectorVolunteer(*this);
 }
 
 void CollectorVolunteer::step() {
-    if (timeLeft > 0) {
-        timeLeft--;
-        if (timeLeft == 0) {
-            completedOrderId = activeOrderId;
-            activeOrderId = NO_ORDER;
-        }
+    if (decreaseCoolDown()) {
+        completedOrderId = activeOrderId;
+        activeOrderId = -1;
     }
 }
 
@@ -65,19 +62,26 @@ bool CollectorVolunteer::decreaseCoolDown() {
 }
 
 bool CollectorVolunteer::hasOrdersLeft() const {
-    // Implementation for CollectorVolunteer
+    return true;
 }
 
 bool CollectorVolunteer::canTakeOrder(const Order &order) const {
-    // Implementation for CollectorVolunteer
+    return !(isBusy());
 }
 
 void CollectorVolunteer::acceptOrder(const Order &order) {
-    // Implementation for CollectorVolunteer
+    timeLeft = getCoolDown();
+    activeOrderId = order.getId();
 }
 
 string CollectorVolunteer::toString() const {
-    // Implementation for CollectorVolunteer
+    string result = "CollectorVolunteer ID: " + to_string(getId()) + "\n";
+    result += "Name: " + getName() + "\n";
+    result += "Cool Down: " + to_string(coolDown) + "\n";
+    result += "Time Left: " + to_string(timeLeft) + "\n";
+    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
+    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
+    return result;
 }
 
 
@@ -86,20 +90,25 @@ string CollectorVolunteer::toString() const {
 LimitedCollectorVolunteer::LimitedCollectorVolunteer(int id, string name, int coolDown, int maxOrders)
     : CollectorVolunteer(id, name, coolDown), maxOrders(maxOrders), ordersLeft(maxOrders) {}
 
+LimitedCollectorVolunteer::LimitedCollectorVolunteer(const LimitedCollectorVolunteer &origin)
+    : CollectorVolunteer(origin), maxOrders(origin.getMaxOrders()), ordersLeft(origin.getNumOrdersLeft()) {}       
+
 LimitedCollectorVolunteer *LimitedCollectorVolunteer::clone() const {
-    return new LimitedCollectorVolunteer(*this);
+    return &LimitedCollectorVolunteer(*this);
 }
 
 bool LimitedCollectorVolunteer::hasOrdersLeft() const {
-    // Implementation for LimitedCollectorVolunteer
+    return getNumOrdersLeft() != 0;
 }
 
 bool LimitedCollectorVolunteer::canTakeOrder(const Order &order) const {
-    // Implementation for LimitedCollectorVolunteer
+    return !(isBusy()) && hasOrdersLeft();
 }
 
 void LimitedCollectorVolunteer::acceptOrder(const Order &order) {
-    // Implementation for LimitedCollectorVolunteer
+    timeLeft = getCoolDown();
+    activeOrderId = order.getId();
+    ordersLeft--;
 }
 
 int LimitedCollectorVolunteer::getMaxOrders() const {
@@ -111,7 +120,15 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
 }
 
 string LimitedCollectorVolunteer::toString() const {
-    // Implementation for LimitedCollectorVolunteer
+    string result = "LimitedCollectorVolunteer ID: " + to_string(getId()) + "\n";
+    result += "Name: " + getName() + "\n";
+    result += "Cool Down: " + to_string(coolDown) + "\n";
+    result += "Time Left: " + to_string(getTimeLeft()) + "\n";
+    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
+    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
+    result += "Max Orders: " + to_string(maxOrders) + "\n";
+    result += "Orders Left: " + to_string(ordersLeft) + "\n";
+    return result;
 }
 
 
