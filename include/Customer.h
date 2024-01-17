@@ -11,6 +11,7 @@ class Order;
 class Customer {
     public:
         Customer(int id, const string &name, int locationDistance, int maxOrders);
+        Customer(const Customer &copy);
         const string &getName() const;
         int getId() const;
         int getCustomerDistance() const;
@@ -36,7 +37,6 @@ class SoldierCustomer: public Customer {
     public:
         SoldierCustomer(int id, string name, int locationDistance, int maxOrders);
         SoldierCustomer *clone() const override;
-    
     private:
         
 };
