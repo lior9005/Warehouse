@@ -32,7 +32,7 @@ class WareHouse {
         vector<BaseAction*> actionsLog;
         vector<Volunteer*> volunteers;
         vector<Order*> pendingOrders;
-        vector<Order*> vol;
+        vector<Order*> inProcessOrders ;
         vector<Order*> completedOrders;
         vector<Customer*> customers;
         int customerCounter; //For assigning unique customer IDs
