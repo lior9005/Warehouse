@@ -5,6 +5,16 @@
             "label": "make",
             "type": "shell",
             "command": "make",
+        },
+        {
+            "label": "valgrind",
+            "type": "shell",
+            "command": "valgrind",
+            "args": ["./your_output_executable"],
+            "group": {
+            "kind": "test",
+            "isDefault": true
+            }
         }
     ]
 }
