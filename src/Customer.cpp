@@ -7,6 +7,14 @@ Customer::Customer(const Customer &copy)
     : Customer(copy.getId(), copy.getName(), copy.getCustomerDistance(), copy.getMaxOrders()){
         ordersId = copy.getOrders();
     }
+Customer::Customer(Customer &&other)
+    : id(other.getId()), name(other.getName()), locationDistance(other.getCustomerDistance()), maxOrders(other.getMaxOrders()), ordersId(other.getOrders()) {
+        ordersId = other.getOrders();
+        other.ordersId.clear();
+    }
+Customer::~Customer() {
+    ordersId.clear();
+}
 
 const string &Customer::getName() const {
     return name;

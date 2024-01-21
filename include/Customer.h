@@ -10,8 +10,22 @@ class Order;
 
 class Customer {
     public:
+
+    //constructor
         Customer(int id, const string &name, int locationDistance, int maxOrders);
+    //copy constructor
         Customer(const Customer &copy);
+    //move constructor
+        Customer(Customer &&other);
+    //destructor
+        virtual ~Customer();
+
+        not implement!!!!
+    //copy assignment operator
+        Customer &operator=(const Customer &other);
+    //move assignment operator
+        Customer (Customer &&other);
+        
         const string &getName() const;
         int getId() const;
         int getCustomerDistance() const;
