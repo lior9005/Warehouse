@@ -20,7 +20,15 @@ enum class OrderStatus {
 class Order {
 
     public:
+    //constructor
         Order(int id, int customerId, int distance);
+    //copy constructor
+        Order(const Order &copy);
+    //move constructor
+        Order(Order &&other);
+    //destructor
+        virtual ~Order();
+
         int getId() const;
         int getCustomerId() const;
         void setStatus(OrderStatus status);

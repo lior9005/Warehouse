@@ -20,11 +20,13 @@ class Customer {
     //destructor
         virtual ~Customer();
 
-        not implement!!!!
+      //  not implement!!!!
+
+      
     //copy assignment operator
         Customer &operator=(const Customer &other);
     //move assignment operator
-        Customer (Customer &&other);
+        Customer &operator=(Customer &&other);
         
         const string &getName() const;
         int getId() const;
