@@ -3,14 +3,6 @@
 Order::Order(int id, int customerId, int distance)
     : id(id), customerId(customerId), distance(distance), status(OrderStatus::PENDING), collectorId(NO_VOLUNTEER), driverId(NO_VOLUNTEER) {}
 
-Order::Order(const Order &copy)
-    : id(copy.id), customerId(copy.customerId), distance(copy.distance), status(copy.status), collectorId(copy.collectorId), driverId(copy.driverId) {}
-
-Order::Order(Order &&other)
-    : id(other.id), customerId(other.customerId), distance(other.distance), status(other.status), collectorId(other.collectorId), driverId(other.driverId) {}
-
-Order::~Order() {}
-
 int Order::getId() const {
     return id;
 }
