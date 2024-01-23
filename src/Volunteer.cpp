@@ -3,9 +3,6 @@
 Volunteer::Volunteer(int id, const string &name)
     : id(id), name(name), completedOrderId(-1), activeOrderId(-1) {}
 
-Volunteer::Volunteer(const Volunteer &origin)
-    : id(origin.getId()), name(origin.getName()), completedOrderId(origin.getCompletedOrderId()), activeOrderId(origin.getActiveOrderId()) {}
-
 int Volunteer::getId() const {
     return id;
 }
@@ -26,16 +23,13 @@ bool Volunteer::isBusy() const {
     return activeOrderId != -1;
 }
 
-
-
 CollectorVolunteer::CollectorVolunteer(int id, string name, int coolDown)
     : Volunteer(id, name), coolDown(coolDown), timeLeft(0) {}
 
-CollectorVolunteer::CollectorVolunteer(const CollectorVolunteer &origin)
-    : Volunteer(origin), coolDown(origin.getCoolDown()), timeLeft(origin.getTimeLeft()) {}       
-
 CollectorVolunteer *CollectorVolunteer::clone() const {
-    return &CollectorVolunteer(*this);
+    CollectorVolunteer *clone = new CollectorVolunteer(getId(), getName(), getCoolDown());
+    clone->setTimeLeft(getTimeLeft());
+    return clone;
 }
 
 void CollectorVolunteer::step() {
@@ -75,26 +69,25 @@ void CollectorVolunteer::acceptOrder(const Order &order) {
 }
 
 string CollectorVolunteer::toString() const {
-    string result = "CollectorVolunteer ID: " + to_string(getId()) + "\n";
+    string result = "CollectorVolunteer ID: " + std::to_string(getId()) + "\n";
     result += "Name: " + getName() + "\n";
-    result += "Cool Down: " + to_string(coolDown) + "\n";
-    result += "Time Left: " + to_string(timeLeft) + "\n";
-    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
-    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
+    result += "Cool Down: " + std::to_string(coolDown) + "\n";
+    result += "Time Left: " + std::to_string(timeLeft) + "\n";
+    result += "Active Order ID: " + std::to_string(getActiveOrderId()) + "\n";
+    result += "Completed Order ID: " + std::to_string(getCompletedOrderId()) + "\n";
     return result;
 }
-
-
-
+void CollectorVolunteer::setTimeLeft(int timeLeft) {
+    CollectorVolunteer::timeLeft = timeLeft;
+}
 
 LimitedCollectorVolunteer::LimitedCollectorVolunteer(int id, string name, int coolDown, int maxOrders)
     : CollectorVolunteer(id, name, coolDown), maxOrders(maxOrders), ordersLeft(maxOrders) {}
 
-LimitedCollectorVolunteer::LimitedCollectorVolunteer(const LimitedCollectorVolunteer &origin)
-    : CollectorVolunteer(origin), maxOrders(origin.getMaxOrders()), ordersLeft(origin.getNumOrdersLeft()) {}       
-
 LimitedCollectorVolunteer *LimitedCollectorVolunteer::clone() const {
-    return &LimitedCollectorVolunteer(*this);
+    LimitedCollectorVolunteer *clone = new LimitedCollectorVolunteer(getId(), getName(), getCoolDown(), getMaxOrders());
+    clone->setTimeLeft(getTimeLeft());
+    return clone;
 }
 
 bool LimitedCollectorVolunteer::hasOrdersLeft() const {
@@ -106,7 +99,7 @@ bool LimitedCollectorVolunteer::canTakeOrder(const Order &order) const {
 }
 
 void LimitedCollectorVolunteer::acceptOrder(const Order &order) {
-    timeLeft = getCoolDown();
+    setTimeLeft(getCoolDown());
     activeOrderId = order.getId();
     ordersLeft--;
 }
@@ -119,15 +112,16 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
     return ordersLeft;
 }
 
+
 string LimitedCollectorVolunteer::toString() const {
-    string result = "LimitedCollectorVolunteer ID: " + to_string(getId()) + "\n";
+    string result = "LimitedCollectorVolunteer ID: " + std::to_string(getId()) + "\n";
     result += "Name: " + getName() + "\n";
-    result += "Cool Down: " + to_string(coolDown) + "\n";
-    result += "Time Left: " + to_string(getTimeLeft()) + "\n";
-    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
-    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
-    result += "Max Orders: " + to_string(maxOrders) + "\n";
-    result += "Orders Left: " + to_string(ordersLeft) + "\n";
+    result += "Cool Down: " + std::to_string(getCoolDown()) + "\n";
+    result += "Time Left: " + std::to_string(getTimeLeft()) + "\n";
+    result += "Active Order ID: " + std::to_string(getActiveOrderId()) + "\n";
+    result += "Completed Order ID: " + std::to_string(getCompletedOrderId()) + "\n";
+    result += "Max Orders: " + std::to_string(maxOrders) + "\n";
+    result += "Orders Left: " + std::to_string(ordersLeft) + "\n";
     return result;
 }
 

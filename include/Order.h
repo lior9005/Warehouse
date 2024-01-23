@@ -20,7 +20,9 @@ enum class OrderStatus {
 class Order {
 
     public:
+    //constructor
         Order(int id, int customerId, int distance);
+
         int getId() const;
         int getCustomerId() const;
         void setStatus(OrderStatus status);

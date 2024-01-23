@@ -3,11 +3,6 @@
 Customer::Customer(int id, const string &name, int locationDistance, int maxOrders)
     : id(id), name(name), locationDistance(locationDistance), maxOrders(maxOrders), ordersId() {}
 
-Customer::Customer(const Customer &copy)
-    : Customer(copy.getId(), copy.getName(), copy.getCustomerDistance(), copy.getMaxOrders()){
-        ordersId = copy.getOrders();
-    }
-
 const string &Customer::getName() const {
     return name;
 }
@@ -49,7 +44,7 @@ SoldierCustomer::SoldierCustomer(int id, string name, int locationDistance, int 
     : Customer(id, name, locationDistance, maxOrders) {}
 
 SoldierCustomer *SoldierCustomer::clone() const {
-    SoldierCustomer * clone = new SoldierCustomer(*this);
+    SoldierCustomer * clone = new SoldierCustomer(getId(), getName(), getCustomerDistance(), getMaxOrders());
     return clone;
 }
 
@@ -57,6 +52,6 @@ CivilianCustomer::CivilianCustomer(int id, string name, int locationDistance, in
     : Customer(id, name, locationDistance, maxOrders) {}
 
 CivilianCustomer *CivilianCustomer::clone() const {
-    CivilianCustomer * clone = new CivilianCustomer(*this);
+    CivilianCustomer * clone = new CivilianCustomer(getId(), getName(), getCustomerDistance(), getMaxOrders());
     return clone;
 }
