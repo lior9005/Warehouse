@@ -6,10 +6,11 @@ using namespace std;
 #include "Customer.h"
 #include "Volunteer.h"
 #include <iostream>
+#include <fstream>
 #include <sstream>
-
-
-
+#include <vector>
+#include <iterator>
+#include <cstring> 
 class BaseAction;
 class Volunteer;
 
@@ -30,6 +31,11 @@ class WareHouse {
         Order &getOrder(int orderId) const;
         void close();
         void open();
+        
+
+        //My functions
+        void printAllCustomers();
+        void printAllVolunteers();
 
     private:
         bool isOpen;

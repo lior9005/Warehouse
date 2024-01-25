@@ -38,6 +38,9 @@ int Customer::addOrder(int orderId) {
     }
     else return -1;
 }
+string Customer::toString() const {
+   return std::to_string(id) + " " + name + " " + std::to_string(locationDistance) + " " + std::to_string(maxOrders);
+}
 
 
 SoldierCustomer::SoldierCustomer(int id, string name, int locationDistance, int maxOrders)

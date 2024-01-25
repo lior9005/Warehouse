@@ -12,6 +12,8 @@ int main(int argc, char** argv){
     }
     string configurationFile = argv[1];
     WareHouse wareHouse(configurationFile);
+    wareHouse.printAllCustomers();
+    wareHouse.printAllVolunteers();
     wareHouse.start();
     if(backup!=nullptr){
     	delete backup;
