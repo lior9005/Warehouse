@@ -4,6 +4,11 @@
 using namespace std;
 #include "Order.h"
 #include "Customer.h"
+#include "Volunteer.h"
+#include <iostream>
+#include <sstream>
+
+
 
 class BaseAction;
 class Volunteer;
@@ -36,4 +41,5 @@ class WareHouse {
         vector<Customer*> customers;
         int customerCounter; //For assigning unique customer IDs
         int volunteerCounter; //For assigning unique volunteer IDs
+        int orderCounter; //For assigning unique order IDs
 };

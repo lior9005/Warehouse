@@ -5,7 +5,7 @@ WareHouse::WareHouse(const string &configFilePath) {
 }
 
 void WareHouse::start() {
-    // TODO: Start the warehouse operations
+    open();
 }
 
 const vector<BaseAction*> &WareHouse::getActionsLog() const {
@@ -41,7 +41,59 @@ void WareHouse::close() {
 }
 
 void WareHouse::open() {
-    // TODO: Open the warehouse
+    isOpen = true;
+    std::cout << "Warehouse is open!" << std::endl;
+    while (isOpen) {
+        std::string input;
+        std::getline(std::cin, input);
+
+        // Split the input string into words
+        std::istringstream iss(input);
+        std::vector<std::string> words;
+        std::string word;
+
+        while (iss >> word) {
+            words.push_back(word);
+        }
+
+        if (words[0] == "step") {
+            simulateStep();
+        }
+        else if (words[0] == "order") {
+            int customerId = std::stoi(words[1]);
+            Order* newOrder = new Order(orderCounter, customerId, customers[customerId].getCustomerDistance());
+            addOrder();
+        }
+        else if (words[0] == "customer") {
+            AddCustomer();
+        }
+        else if (words[0] == "orderStatus") {
+            PrintOrderStatus();
+        }
+        else if (words[0] == "customerStatus") {
+            PrintCustomerStatus();
+        }
+        else if (words[0] == "volunteerStatus") {
+            PrintVolunteerStatus();
+        }
+        else if (words[0] == "log") {
+            PrintActionsLog();
+        }
+        else if (words[0] == "close") {
+            Close();
+        }
+        else if (words[0] == "backup") {
+            BackupWarehouse();
+        }
+        else if (words[0] == "restore") {
+            RestoreWarehouse();
+        }
+        else {
+            std::cout << "Incorrect Input" << std::endl;
+        }
+
+
+    }
 }
 // Function to parse the configuration file
 void parse_config_file(const std::string& file_path, vector<Customer*> customers, std::vector<Volunteer*> volunteers) {
