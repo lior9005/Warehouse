@@ -1,7 +1,7 @@
 #include "Volunteer.h"
 
 Volunteer::Volunteer(int id, const string &name)
-    : id(id), name(name), completedOrderId(-1), activeOrderId(-1) {}
+    : id(id), name(name), completedOrderId(NO_ORDER), activeOrderId(NO_ORDER) {}
 
 int Volunteer::getId() const {
     return id;
@@ -20,7 +20,7 @@ int Volunteer::getCompletedOrderId() const {
 }
 
 bool Volunteer::isBusy() const {
-    return activeOrderId != -1;
+    return activeOrderId != NO_ORDER;
 }
 
 CollectorVolunteer::CollectorVolunteer(int id, string name, int coolDown)
