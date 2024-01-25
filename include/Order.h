@@ -22,7 +22,7 @@ class Order {
     public:
     //constructor
         Order(int id, int customerId, int distance);
-
+        Order* clone() const;
         int getId() const;
         int getCustomerId() const;
         void setStatus(OrderStatus status);
