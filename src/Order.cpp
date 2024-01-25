@@ -3,6 +3,10 @@
 Order::Order(int id, int customerId, int distance)
     : id(id), customerId(customerId), distance(distance), status(OrderStatus::PENDING), collectorId(NO_VOLUNTEER), driverId(NO_VOLUNTEER) {}
 
+Order* Order::clone() const {
+    return new Order(*this);
+}
+
 int Order::getId() const {
     return id;
 }
