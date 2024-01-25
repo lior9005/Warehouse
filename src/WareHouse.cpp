@@ -1,7 +1,7 @@
 #include "WareHouse.h"
 
 WareHouse::WareHouse(const string &configFilePath) 
-    : isOpen(false), customerCounter(0), volunteerCounter(0), orderCount(0){
+    : isOpen(false), customerCounter(0), volunteerCounter(0), orderCounter(0){
     
     // Open the file for reading
         std::ifstream file(configFilePath);
@@ -106,7 +106,7 @@ void WareHouse::start() {
     open();
 }
 
-const vector<BaseAction*> &WareHouse::getActionsLog() const {
+const vector<BaseAction*> &WareHouse::getActions() const {
     return actionsLog;
 }
 
@@ -116,10 +116,6 @@ void WareHouse::addOrder(Order* order) {
 
 void WareHouse::addAction(BaseAction* action) {
     // TODO: Add an action to the warehouse
-}
-
-void WareHouse::printActionsLogs() {
-    // TODO: Print the action logs
 }
 
 Customer &WareHouse::getCustomer(int customerId) const {
