@@ -11,7 +11,8 @@ using namespace std;
 #include <sstream>
 #include <vector>
 #include <iterator>
-#include <cstring> 
+#include <cstring>
+#include <algorithm>
 class BaseAction;
 class Volunteer;
 
@@ -23,21 +24,23 @@ class WareHouse {
     public:
         WareHouse(const string &configFilePath);
         WareHouse(const WareHouse &other);
+        WareHouse(WareHouse&& other);
         void start();
         const vector<BaseAction*> &getActions() const;
         void addOrder(Order* order);
         void addCustomer(Customer* customer);
         void addVolunteer(Volunteer* volunteer);
         void addAction(BaseAction* action);
-        Customer &getCustomer(int customerId) const;
-        Volunteer &getVolunteer(int volunteerId) const;
-        Order &getOrder(int orderId) const;
+        const Customer& getCustomer(int customerId) const;
+        const Volunteer& getVolunteer(int volunteerId) const;
+        const Order &getOrder(int orderId) const;
         void close();
         void open();
         ~WareHouse();
         void advanceOrder(Order* order);
         void deleteVolunteer(Volunteer* volunteer);
-
+        WareHouse& operator=(const WareHouse& other);
+        WareHouse& operator=(WareHouse&& other);
 
         //My functions
         void printAllCustomers();
