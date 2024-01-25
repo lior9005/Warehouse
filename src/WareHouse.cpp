@@ -1,7 +1,7 @@
 #include "WareHouse.h"
 
 WareHouse::WareHouse(const string &configFilePath) 
-    : isOpen(false), customerCounter(0), volunteerCounter(0), orderCount(0){
+    : isOpen(false), customerCounter(0), volunteerCounter(0), orderCounter(0){
     
     // Open the file for reading
         std::ifstream file(configFilePath);
@@ -99,43 +99,89 @@ WareHouse::WareHouse(const string &configFilePath)
     }
     // Close the file
     file.close();
+}
 
+WareHouse::WareHouse(const WareHouse &other) 
+    : isOpen(other.isOpen), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter), orderCounter(orderCounter){
+    for (Order* order : other.pendingOrders) {
+        pendingOrders.push_back(order->clone());
+    }
+    for (Order* order : inProcessOrders) {
+        if (order->getId() == orderId) {
+            return *order;
+        }
+    }
+    for (Order* order : completedOrders) {
+        if (order->getId() == orderId) {
+            return *order;
+        }
+    }
 }
 
 void WareHouse::start() {
     open();
 }
 
-const vector<BaseAction*> &WareHouse::getActionsLog() const {
+const vector<BaseAction*> &WareHouse::getActions() const {
     return actionsLog;
 }
 
 void WareHouse::addOrder(Order* order) {
-    // TODO: Add an order to the warehouse
+    pendingOrders.push_back(order);
+    orderCounter++;
+}
+
+void WareHouse::addCustomer(Customer* customer) {
+    customers.push_back(customer);
+    customerCounter++;
+}
+
+void WareHouse::addVolunteer(Volunteer* volunteer) {
+    volunteers.push_back(volunteer);
+    volunteerCounter++;
 }
 
 void WareHouse::addAction(BaseAction* action) {
-    // TODO: Add an action to the warehouse
-}
-
-void WareHouse::printActionsLogs() {
-    // TODO: Print the action logs
+    actionsLog.push_back(action);
 }
 
 Customer &WareHouse::getCustomer(int customerId) const {
-    // TODO: Return the customer with the given ID
+    for (Customer* customer : customers) {
+        if (customer->getId() == customerId) {
+            return *customer;
+        }
+    }
 }
 
 Volunteer &WareHouse::getVolunteer(int volunteerId) const {
-    // TODO: Return the volunteer with the given ID
+    for (Volunteer* volunteer : volunteers) {
+        if (volunteer->getId() == volunteerId) {
+            return *volunteer;
+        }
+    }
 }
 
 Order &WareHouse::getOrder(int orderId) const {
-    // TODO: Return the order with the given ID
+    for (Order* order : pendingOrders) {
+        if (order->getId() == orderId) {
+            return *order;
+        }
+    }
+    for (Order* order : inProcessOrders) {
+        if (order->getId() == orderId) {
+            return *order;
+        }
+    }
+    for (Order* order : completedOrders) {
+        if (order->getId() == orderId) {
+            return *order;
+        }
+    }
 }
 
 void WareHouse::close() {
-    // TODO: Close the warehouse
+    isOpen = false;
+    delete this;
 }
 
 void WareHouse::open() {
@@ -143,63 +189,88 @@ void WareHouse::open() {
     std::cout << "Warehouse is open!" << std::endl;
     while (isOpen) {
         std::string input;
-        std::getline(std::cin, input);
-
-        // Split the input string into words
-        std::istringstream iss(input);
+        std::getline(std::cin, input);  // save the string entered in input
+        std::istringstream iss(input);  // Split the input string into words
         std::vector<std::string> words;
         std::string word;
-
         while (iss >> word) {
             words.push_back(word);
         }
 
         if (words[0] == "step") {
-            simulateStep();
+            BaseAction* step = new SimulateStep(std::stoi(words[1]));
+            step->act(*this);
         }
         else if (words[0] == "order") {
-            int customerId = std::stoi(words[1]);
-            Order* newOrder = new Order(orderCounter, customerId, customers[customerId].getCustomerDistance());
-            addOrder();
+            BaseAction* addOrder = new AddOrder(std::stoi(words[1]));
+            addOrder->act(*this);
         }
         else if (words[0] == "customer") {
-            AddCustomer();
+            BaseAction* addCustomer = new AddCustomer(words[1], words[2], std::stoi(words[3]), std::stoi(words[4]));
+            addCustomer->act(*this);
         }
         else if (words[0] == "orderStatus") {
-            PrintOrderStatus();
+            BaseAction* orderStatus = new PrintOrderStatus(std::stoi(words[1]));
+            orderStatus->act(*this);            
         }
         else if (words[0] == "customerStatus") {
-            PrintCustomerStatus();
+            BaseAction* customerStatus = new PrintCustomerStatus(std::stoi(words[1]));
+            customerStatus->act(*this);            
         }
         else if (words[0] == "volunteerStatus") {
-            PrintVolunteerStatus();
+            BaseAction* volunteerStatus = new PrintVolunteerStatus(std::stoi(words[1]));
+            volunteerStatus->act(*this);            
         }
         else if (words[0] == "log") {
-            PrintActionsLog();
+            BaseAction* log = new PrintActionsLog();
+            log->act(*this);            
         }
         else if (words[0] == "close") {
-            Close();
+            BaseAction* close = new Close();
+            close->act(*this);            
         }
         else if (words[0] == "backup") {
-            BackupWarehouse();
+            BaseAction* backup = new BackupWareHouse();
+            backup->act(*this);            
         }
         else if (words[0] == "restore") {
-            RestoreWarehouse();
+            BaseAction* restore = new RestoreWareHouse();
+            restore->act(*this);            
         }
         else {
             std::cout << "Incorrect Input" << std::endl;
         }
-
-
     }
 }
+
+WareHouse::~WareHouse() {
+    for (BaseAction* action : actionsLog) {
+        delete(action);
+    }
+    for (Volunteer* volunteer : volunteers) {
+        delete(volunteer);
+    }    
+    for (Order* order : pendingOrders) {
+        delete(order);
+    }
+    for (Order* order : inProcessOrders) {
+        delete(order);
+    }
+    for (Order* order : completedOrders) {
+        delete(order);
+    }
+    for (Customer* customer : customers) {
+        delete(customer);
+    }
+}
+
 void WareHouse:: printAllCustomers(){
-    for (int i = 0; i < customers.size(); ++i) {
-        cout << customers[i]->toString() << endl;
+    for (Customer* customer : customers) {
+        cout << customer->toString() << endl;
     }
 }
 void WareHouse:: printAllVolunteers(){
-    for (int i = 0; i < volunteers.size(); ++i) {
-        cout << volunteers[i]->toString() << endl;
+    for (Volunteer* volunteer : volunteers) {
+        cout << volunteer->toString() << endl;
     }
 }

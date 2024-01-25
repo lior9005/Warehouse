@@ -24,7 +24,8 @@ class Customer {
         int addOrder(int orderId); //return OrderId if order was added successfully, -1 otherwise
         virtual Customer *clone() const = 0; // Return a copy of the customer
         string toString() const; //Prints the customer's details
-        
+
+
     private:
         const int id;
         const string name;
