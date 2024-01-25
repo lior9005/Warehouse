@@ -31,6 +31,7 @@ class Order {
         int getCollectorId() const;
         int getDriverId() const;
         OrderStatus getStatus() const;
+        int getDistance() const;
         const string toString() const;
 
     private:
