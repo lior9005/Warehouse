@@ -35,6 +35,10 @@ OrderStatus Order::getStatus() const {
     return status;
 }
 
+int Order::getDistance() const {
+    return distance;
+}
+
 const std::string Order::toString() const {
     std::string orderStatus[] = {"PENDING", "COLLECTING", "DELIVERING", "COMPLETED"};
     return "OrderId: " + std::to_string(id) +

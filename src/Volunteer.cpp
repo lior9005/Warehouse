@@ -29,15 +29,17 @@ CollectorVolunteer::CollectorVolunteer(int id, string name, int coolDown)
     : Volunteer(id, name), coolDown(coolDown), timeLeft(0) {}
 
 CollectorVolunteer *CollectorVolunteer::clone() const {
-    CollectorVolunteer* cVolunteer = new CollectorVolunteer(getId(), getName(), getCoolDown());
-    (*cVolunteer).setTimeLeft(getTimeLeft());
-    return cVolunteer;
+    CollectorVolunteer* clone = new CollectorVolunteer(getId(), getName(), getCoolDown());
+    clone->setTimeLeft(getTimeLeft());
+    clone->activeOrderId = getActiveOrderId();
+    clone->completedOrderId = getCompletedOrderId();
+    return clone;
 }
 
 void CollectorVolunteer::step() {
     if (decreaseCoolDown()) {
         completedOrderId = activeOrderId;
-        activeOrderId = -1;
+        activeOrderId = NO_ORDER;
     }
 }
 
@@ -70,16 +72,18 @@ void CollectorVolunteer::acceptOrder(const Order &order) {
     activeOrderId = order.getId();
 }
 
-string CollectorVolunteer::toString() const {
-    string result = "CollectorVolunteer ID: " + to_string(getId()) + "\n";
-    result += "Name: " + getName() + "\n";
-    result += "Cool Down: " + to_string(coolDown) + "\n";
-    result += "Time Left: " + to_string(timeLeft) + "\n";
-    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
-    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
-    return result;
+void CollectorVolunteer::setTimeLeft(int newTimeLeft) {
+    timeLeft = newTimeLeft;
 }
 
+string CollectorVolunteer::toString() const {
+        return "CollectorVolunteer ID: " + std::to_string(getId()) +
+           ", Name: " + getName() +
+           ", Cool Down: " + std::to_string(coolDown) +
+           ", Time Left: " + std::to_string(timeLeft) +
+           ", Active Order ID: " + std::to_string(activeOrderId) +
+           ", Completed Order ID: " + std::to_string(completedOrderId);
+}
 
 
 
@@ -87,9 +91,13 @@ LimitedCollectorVolunteer::LimitedCollectorVolunteer(int id, string name, int co
     : CollectorVolunteer(id, name, coolDown), maxOrders(maxOrders), ordersLeft(maxOrders) {}
 
 LimitedCollectorVolunteer *LimitedCollectorVolunteer::clone() const {
-    LimitedCollectorVolunteer* lCVolunteer = new LimitedCollectorVolunteer(getId(), getName(), getCoolDown(), getMaxOrders());
-    (*cVolunteer).setTimeLeft(getTimeLeft());
-    return cVolunteer;}
+    LimitedCollectorVolunteer* clone = new LimitedCollectorVolunteer(getId(), getName(), getCoolDown(), getMaxOrders());
+    clone->setTimeLeft(getTimeLeft());
+    clone->activeOrderId = getActiveOrderId();
+    clone->completedOrderId = getCompletedOrderId();
+    clone->setOrdersLeft(getNumOrdersLeft());
+    return clone;
+}
 
 bool LimitedCollectorVolunteer::hasOrdersLeft() const {
     return getNumOrdersLeft() != 0;
@@ -100,7 +108,7 @@ bool LimitedCollectorVolunteer::canTakeOrder(const Order &order) const {
 }
 
 void LimitedCollectorVolunteer::acceptOrder(const Order &order) {
-    timeLeft = getCoolDown();
+    setTimeLeft(getCoolDown());
     activeOrderId = order.getId();
     ordersLeft--;
 }
@@ -113,26 +121,29 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
     return ordersLeft;
 }
 
-string LimitedCollectorVolunteer::toString() const {
-    string result = "LimitedCollectorVolunteer ID: " + to_string(getId()) + "\n";
-    result += "Name: " + getName() + "\n";
-    result += "Cool Down: " + to_string(coolDown) + "\n";
-    result += "Time Left: " + to_string(getTimeLeft()) + "\n";
-    result += "Active Order ID: " + to_string(getActiveOrderId()) + "\n";
-    result += "Completed Order ID: " + to_string(getCompletedOrderId()) + "\n";
-    result += "Max Orders: " + to_string(maxOrders) + "\n";
-    result += "Orders Left: " + to_string(ordersLeft) + "\n";
-    return result;
+void LimitedCollectorVolunteer::setOrdersLeft(int newOrdersLeft) {
+    ordersLeft = newOrdersLeft;
 }
 
-
+string LimitedCollectorVolunteer::toString() const {
+    return "LimitedCollectorVolunteer ID: " + std::to_string(getId()) +
+        ", Name: " + getName() +
+        ", Cool Down: " + std::to_string(getCoolDown()) +
+        ", Time Left: " + std::to_string(getTimeLeft()) +
+        ", Active Order ID: " + std::to_string(activeOrderId) +
+        ", Completed Order ID: " + std::to_string(completedOrderId) +
+        ", Max Orders: " + std::to_string(maxOrders) +
+        ", Orders Left: " + std::to_string(ordersLeft);
+}
 
 
 DriverVolunteer::DriverVolunteer(int id, string name, int maxDistance, int distancePerStep)
     : Volunteer(id, name), maxDistance(maxDistance), distancePerStep(distancePerStep), distanceLeft(0) {}
 
 DriverVolunteer *DriverVolunteer::clone() const {
-    return new DriverVolunteer(*this);
+    DriverVolunteer* clone = new DriverVolunteer(getId(), getName(), getMaxDistance(), getDistancePerStep());
+    clone->setDistanceLeft(getDistanceLeft());
+    return clone;
 }
 
 int DriverVolunteer::getDistanceLeft() const {
@@ -148,29 +159,39 @@ int DriverVolunteer::getDistancePerStep() const {
 }
 
 bool DriverVolunteer::decreaseDistanceLeft() {
-    // Implementation for decreasing distanceLeft
+    setDistanceLeft(distanceLeft-distancePerStep);
+    if(distanceLeft < 0)
+        setDistanceLeft(0);
+    return true;
 }
 
 bool DriverVolunteer::hasOrdersLeft() const {
-    // Implementation for DriverVolunteer
+    return true;
 }
 
 bool DriverVolunteer::canTakeOrder(const Order &order) const {
-    // Implementation for DriverVolunteer
+    return (order.getDistance() <= maxDistance) && (distanceLeft == 0);
 }
 
 void DriverVolunteer::acceptOrder(const Order &order) {
-    // Implementation for DriverVolunteer
+    setDistanceLeft(order.getDistance());
 }
 
 void DriverVolunteer::step() {
-    // Implementation for DriverVolunteer
+    decreaseDistanceLeft();
+}
+
+void DriverVolunteer::setDistanceLeft(int newDistanceLeft) {
+    distanceLeft = newDistanceLeft;
 }
 
 string DriverVolunteer::toString() const {
-    // Implementation for DriverVolunteer
+    return "DriverVolunteer ID: " + std::to_string(getId()) +
+        ", Name: " + getName() +
+        ", Max Distance: " + std::to_string(maxDistance) +
+        ", Distance Per Step: " + std::to_string(distancePerStep) +
+        ", Distance Left: " + std::to_string(distanceLeft);
 }
-
 
 
 
@@ -178,7 +199,10 @@ LimitedDriverVolunteer::LimitedDriverVolunteer(int id, const string &name, int m
     : DriverVolunteer(id, name, maxDistance, distancePerStep), maxOrders(maxOrders), ordersLeft(maxOrders) {}
 
 LimitedDriverVolunteer *LimitedDriverVolunteer::clone() const {
-    return new LimitedDriverVolunteer(*this);
+    LimitedDriverVolunteer* clone = new LimitedDriverVolunteer(getId(), getName(), getMaxDistance(), getDistancePerStep(), getMaxOrders());
+    clone->setDistanceLeft(getDistanceLeft());
+    clone->setOrdersLeft(getNumOrdersLeft());
+    return clone;
 }
 
 int LimitedDriverVolunteer::getMaxOrders() const {
@@ -190,17 +214,28 @@ int LimitedDriverVolunteer::getNumOrdersLeft() const {
 }
 
 bool LimitedDriverVolunteer::hasOrdersLeft() const {
-    // Implementation for LimitedDriverVolunteer
+    return ordersLeft!=0;
 }
 
 bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
-    // Implementation for LimitedDriverVolunteer
+    return hasOrdersLeft() && (order.getDistance() <= getMaxDistance()) && (getDistanceLeft() == 0);
 }
 
 void LimitedDriverVolunteer::acceptOrder(const Order &order) {
-    // Implementation for LimitedDriverVolunteer
+    ordersLeft--;
+    setDistanceLeft(order.getDistance());
+}
+
+void LimitedDriverVolunteer::setOrdersLeft(int newOrdersLeft) {
+    ordersLeft = newOrdersLeft;
 }
 
 string LimitedDriverVolunteer::toString() const {
-    // Implementation for LimitedDriverVolunteer
+    return "LimitedDriverVolunteer ID: " + std::to_string(getId()) +
+        ", Name: " + getName() +
+        ", Max Distance: " + std::to_string(getMaxDistance()) +
+        ", Distance Per Step: " + std::to_string(getDistancePerStep()) +
+        ", Distance Left: " + std::to_string(getDistanceLeft()) +
+        ", Max Orders: " + std::to_string(getMaxOrders()) +
+        ", Orders Left: " + std::to_string(getNumOrdersLeft());
 }
