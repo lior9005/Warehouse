@@ -1,7 +1,7 @@
 #include "Action.h"
 #include "WareHouse.h"
 
-BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::ERROR) {};
+BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::COMPLETED) {};
 
 ActionStatus BaseAction::getStatus() const {
     return status;
@@ -69,10 +69,15 @@ void SimulateStep::act(WareHouse &wareHouse) {
         //phase 3 - check if there are orders that are completed
         for (Volunteer *volunteer : wareHouse.getVolunteersList()){
             if (!(volunteer->isBusy()) && (volunteer->getCompletedOrderId() != NO_ORDER)){
-                Order order = wareHouse.getOrder(volunteer->getCompletedOrderId());
-                wareHouse.advanceOrder(&order);
-                volunteer->restartCompletedOrderId();
+                int orderId = volunteer->getCompletedOrderId();
+                for (Order *order : wareHouse.getInProcessOrdersList()){
+                    if (order->getId() == orderId){
+                        wareHouse.advanceOrder(order);
+                        volunteer->restartCompletedOrderId();
+                        break;
+                    }
                 }
+            }
         }
 
         //phase 4 - delete unnecessary volunteers
@@ -83,11 +88,10 @@ void SimulateStep::act(WareHouse &wareHouse) {
             }
         }    
         stepsToPerform--;
-        complete();
     }
 }
 
-std::string SimulateStep::toString() const {
+string SimulateStep::toString() const {
     return "SimulateStep " + std::to_string(numOfSteps) +" "+ statusToString();
 }
 
@@ -99,13 +103,12 @@ SimulateStep *SimulateStep::clone() const {
 AddOrder::AddOrder(int id) : customerId(id) {}
 
 void AddOrder::act(WareHouse &wareHouse){
-    if (wareHouse.getCustomerCounter() < customerId || wareHouse.getCustomer(customerId).canMakeOrder() == false){
+    if (wareHouse.getCustomerCounter()-1 < customerId || wareHouse.getCustomer(customerId).canMakeOrder() == false){
         error("Cannot place this order");
     }
     else {
         Order* newOrder = new Order((wareHouse.getOrdersCounter()),customerId, wareHouse.getCustomer(customerId).getCustomerDistance());
         wareHouse.addOrder(newOrder);
-        complete();
     }
 }
 
@@ -130,7 +133,6 @@ void AddCustomer::act(WareHouse &wareHouse){
         Customer* newCustomer = new CivilianCustomer(wareHouse.getCustomerCounter()+1, customerName, distance, maxOrders);
         wareHouse.addCustomer(newCustomer);
     }
-    complete();
 }
 
 AddCustomer* AddCustomer::clone() const {
@@ -138,7 +140,7 @@ AddCustomer* AddCustomer::clone() const {
 }
 
 string AddCustomer::toString() const {
-    return "Customer " + customerName + typeToString() +" "+ std::to_string(distance) +" "+ std::to_string(maxOrders) +" "+ statusToString();
+    return "Customer " + customerName +" "+ typeToString() +" "+ std::to_string(distance) +" "+ std::to_string(maxOrders) +" "+ statusToString();
 }
 
 string AddCustomer::typeToString() const {
@@ -160,7 +162,6 @@ void PrintOrderStatus::act(WareHouse &wareHouse){
     else {
         const Order &order = wareHouse.getOrder(orderId);
         cout << order.toString() << endl;
-          complete();
     }
 }
 
@@ -189,7 +190,6 @@ void PrintCustomerStatus::act(WareHouse &wareHouse){
         }
         customerStatus += "numOrdersLeft: " + std::to_string(customer.getMaxOrders()-customer.getOrdersIds().size());
         cout << customerStatus << endl; 
-        complete();
     }
 }
 
@@ -208,7 +208,6 @@ void PrintVolunteerStatus::act(WareHouse &wareHouse){
     for (Volunteer *volunteer : wareHouse.getVolunteersList()){
         if (volunteer->getId() == volunteerId){
             cout << volunteer->toString() << endl;
-            complete();
             return;
         }
     }
@@ -230,7 +229,6 @@ void PrintActionsLog::act(WareHouse &wareHouse) {
     for(BaseAction* action : actions){
         cout << action->toString() << endl;
     }
-    complete();
 }
 
 PrintActionsLog* PrintActionsLog::clone() const{
@@ -245,7 +243,6 @@ Close::Close() {}
 
 void Close::act(WareHouse &wareHouse) {
     wareHouse.printAllOrders();
-    complete();
     wareHouse.close();
 }
 
@@ -261,10 +258,9 @@ BackupWareHouse::BackupWareHouse() {}
 
 void BackupWareHouse::act(WareHouse &wareHouse) {
     if(backup == nullptr)
-        backup = new WareHouse(wareHouse);
+        backup =  new WareHouse(wareHouse);
     else
         *backup = wareHouse;
-    complete();
 }
 
 BackupWareHouse* BackupWareHouse::clone() const {
@@ -284,7 +280,6 @@ void RestoreWareHouse::act(WareHouse &wareHouse){
     }
     else {
         wareHouse = *backup;
-        complete();
     }
 }
 
