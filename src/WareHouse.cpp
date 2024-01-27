@@ -436,3 +436,9 @@ void WareHouse:: printAllVolunteers(){
         cout << volunteer->toString() << endl;
     }
 }
+
+void WareHouse:: printAllOrders(){
+    for (Order* order : pendingOrders) {
+        cout << "OrderID:" << order->getId() << ", CustomerID: " << order->getCustomerId() << ", OrderStatus: " << order->getStatusString() << endl;
+    }
+}
