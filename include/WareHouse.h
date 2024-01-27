@@ -47,6 +47,8 @@ class WareHouse {
         //My functions
         void printAllCustomers();
         void printAllVolunteers();
+        void printAllOrders();
+
 
     private:
         bool isOpen;
