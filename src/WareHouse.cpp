@@ -1,4 +1,5 @@
 #include "WareHouse.h"
+#include "Action.h"
 
 WareHouse::WareHouse(const string &configFilePath) 
     : isOpen(false), customerCounter(0), volunteerCounter(0), orderCounter(0){

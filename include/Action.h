@@ -1,7 +1,19 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <iterator>
+#include <cstring>
+#include <algorithm>
+#include "Order.h"
+#include "Customer.h"
+#include "Volunteer.h"
 #include "WareHouse.h"
+
+using namespace std;
 using std::string;
 using std::vector;
 class WareHouse;
