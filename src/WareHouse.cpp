@@ -442,4 +442,10 @@ void WareHouse:: printAllOrders(){
     for (Order* order : pendingOrders) {
         cout << "OrderID:" << order->getId() << ", CustomerID: " << order->getCustomerId() << ", OrderStatus: " << order->getStatusString() << endl;
     }
+    for (Order* order : inProcessOrders) {
+        cout << "OrderID:" << order->getId() << ", CustomerID: " << order->getCustomerId() << ", OrderStatus: " << order->getStatusString() << endl;
+    }
+    for (Order* order : completedOrders) {
+        cout << "OrderID:" << order->getId() << ", CustomerID: " << order->getCustomerId() << ", OrderStatus: " << order->getStatusString() << endl;
+    }
 }
