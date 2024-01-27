@@ -12,7 +12,7 @@ using namespace std;
 #include <iterator>
 #include <cstring>
 #include <algorithm>
-class BaseAction;
+#include "Action.h"
 class Volunteer;
 
 // Warehouse responsible for Volunteers, Customers and Actions.
