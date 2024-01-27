@@ -16,9 +16,6 @@ string BaseAction::statusToString() const{
     }
 }
 
-void BaseAction::complete() {
-    status = ActionStatus::COMPLETED;
-}
 void BaseAction::error(std::string errorMsg) {
     status = ActionStatus::ERROR;
     cout << "Error: " << errorMsg << endl;
