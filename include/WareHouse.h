@@ -42,6 +42,7 @@ class WareHouse {
         WareHouse& operator=(WareHouse&& other);
         vector<Volunteer*> &getVolunteersList();
         vector<Order*> &getPendingOrdersList();
+        vector<Order*> &getInProcessOrdersList();
         int getCustomerCounter() const;
         int getOrdersCounter() const;
         //My functions
