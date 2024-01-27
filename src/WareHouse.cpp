@@ -252,7 +252,7 @@ void WareHouse::open() {
         while (iss >> word) {
             words.push_back(word);
         }
-
+        
         if (words[0] == "step") {
             BaseAction* step = new SimulateStep(std::stoi(words[1]));
             step->act(*this);
