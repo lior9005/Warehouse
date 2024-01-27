@@ -136,7 +136,6 @@ WareHouse::WareHouse(WareHouse&& other)
         other.customers.clear();
     }
  
-
 void WareHouse::start() {
     open();
 }
