@@ -14,7 +14,7 @@ using namespace std;
 #include <algorithm>
 #include "Action.h"
 class Volunteer;
-
+class BaseAction;
 // Warehouse responsible for Volunteers, Customers and Actions.
 
 

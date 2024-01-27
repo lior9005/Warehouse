@@ -1,4 +1,5 @@
 #include "Action.h"
+#include "WareHouse.h"
 
 BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::ERROR) {};
 
