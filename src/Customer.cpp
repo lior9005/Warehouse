@@ -34,7 +34,7 @@ const vector<int> &Customer::getOrdersIds() const {
 int Customer::addOrder(int orderId) {
     if (canMakeOrder()){
         ordersId.push_back(orderId);
-         return orderId;
+        return orderId;
     }
     else return -1;
 }
