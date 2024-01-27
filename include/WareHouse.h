@@ -41,7 +41,10 @@ class WareHouse {
         void deleteVolunteer(Volunteer* volunteer);
         WareHouse& operator=(const WareHouse& other);
         WareHouse& operator=(WareHouse&& other);
-
+        vector<Volunteer*> &getVolunteersList();
+        vector<Order*> &getPendingOrdersList();
+        int getCustomerCounter() const;
+        int getOrdersCounter() const;
         //My functions
         void printAllCustomers();
         void printAllVolunteers();

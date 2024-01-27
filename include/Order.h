@@ -33,6 +33,7 @@ class Order {
         OrderStatus getStatus() const;
         int getDistance() const;
         const string toString() const;
+        const string getStatusString() const;
 
     private:
         const int id;
