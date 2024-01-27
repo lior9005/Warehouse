@@ -16,9 +16,6 @@ string BaseAction::statusToString() const{
     }
 }
 
-void BaseAction::complete() {
-    status = ActionStatus::COMPLETED;
-}
 void BaseAction::error(std::string errorMsg) {
     status = ActionStatus::ERROR;
     cout << "Error: " << errorMsg << endl;
@@ -36,25 +33,26 @@ void SimulateStep::act(WareHouse &wareHouse) {
     
         //phase 1 - iterate over all pending orders and check if there is a volunteer that can take the order
         vector<Order*> &pendingOrders = wareHouse.getPendingOrdersList();
-        for (Order *order :pendingOrders){
-
+        for(int i=0; i<pendingOrders.size(); i++){
             //who needs to take the order
-            if (order->getStatus() == OrderStatus::PENDING){
+            if (pendingOrders[i]->getStatus() == OrderStatus::PENDING){
                 for (Volunteer *volunteer : wareHouse.getVolunteersList()){
-                    if (((typeid(*volunteer) == typeid(CollectorVolunteer)) || (typeid(*volunteer) == typeid(LimitedCollectorVolunteer)))  && (volunteer->canTakeOrder(*order))){
-                        volunteer->acceptOrder(*order);
-                        order->setCollectorId(volunteer->getId());
-                        wareHouse.advanceOrder(order);
+                    if (((typeid(*volunteer) == typeid(CollectorVolunteer)) || (typeid(*volunteer) == typeid(LimitedCollectorVolunteer)))  && (volunteer->canTakeOrder(*pendingOrders[i]))){
+                        volunteer->acceptOrder(*pendingOrders[i]);
+                        pendingOrders[i]->setCollectorId(volunteer->getId());
+                        wareHouse.advanceOrder(pendingOrders[i]);
+                        i--;
                         break;
                     }
                 }
             }
-            else if (order->getStatus() == OrderStatus::COLLECTING){
+            else if (pendingOrders[i]->getStatus() == OrderStatus::COLLECTING){
                 for (Volunteer *volunteer : wareHouse.getVolunteersList()){
-                    if (((typeid(*volunteer) == typeid(DriverVolunteer)) || (typeid(*volunteer) == typeid(LimitedDriverVolunteer)))  && (volunteer->canTakeOrder(*order))){
-                        volunteer->acceptOrder(*order);
-                        order->setDriverId(volunteer->getId());
-                        wareHouse.advanceOrder(order);          
+                    if (((typeid(*volunteer) == typeid(DriverVolunteer)) || (typeid(*volunteer) == typeid(LimitedDriverVolunteer)))  && (volunteer->canTakeOrder(*pendingOrders[i]))){
+                        volunteer->acceptOrder(*pendingOrders[i]);
+                        pendingOrders[i]->setDriverId(volunteer->getId());
+                        wareHouse.advanceOrder(pendingOrders[i]);
+                        i--;         
                         break;
                     }
                 }
@@ -70,9 +68,11 @@ void SimulateStep::act(WareHouse &wareHouse) {
         for (Volunteer *volunteer : wareHouse.getVolunteersList()){
             if (!(volunteer->isBusy()) && (volunteer->getCompletedOrderId() != NO_ORDER)){
                 int orderId = volunteer->getCompletedOrderId();
-                for (Order *order : wareHouse.getInProcessOrdersList()){
-                    if (order->getId() == orderId){
-                        wareHouse.advanceOrder(order);
+                vector<Order*> &inProcessOrders = wareHouse.getInProcessOrdersList();
+                for(int i=0; i<inProcessOrders.size(); i++){
+                    if (inProcessOrders[i]->getId() == orderId){
+                        wareHouse.advanceOrder(inProcessOrders[i]);
+                        i--;
                         volunteer->restartCompletedOrderId();
                         break;
                     }
@@ -81,10 +81,13 @@ void SimulateStep::act(WareHouse &wareHouse) {
         }
 
         //phase 4 - delete unnecessary volunteers
-        for (Volunteer *volunteer : wareHouse.getVolunteersList()){
+        vector<Volunteer*> &volunteers = wareHouse.getVolunteersList();
+        for(int i=0; i<volunteers.size(); i++){
+            Volunteer* volunteer = volunteers[i];
             if ((!(volunteer->hasOrdersLeft())) && (!(volunteer->isBusy()))){
                 wareHouse.deleteVolunteer(volunteer);
                 delete volunteer;
+                i--;
             }
         }    
         stepsToPerform--;
@@ -156,7 +159,7 @@ string AddCustomer::typeToString() const {
 PrintOrderStatus::PrintOrderStatus(int id) : orderId(id) {}
 
 void PrintOrderStatus::act(WareHouse &wareHouse){
-    if (wareHouse.getOrdersCounter() < orderId){
+    if (wareHouse.getOrdersCounter()-1 < orderId){
         error("Order does not exist");
     }
     else {
