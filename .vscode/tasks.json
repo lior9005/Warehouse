@@ -10,7 +10,7 @@
             "label": "valgrind",
             "type": "shell",
             "command": "valgrind",
-            "args": ["./your_output_executable"],
+            "args": ["./main /root/ass_1/bin/rest/configFileExample.txt"],
             "group": {
             "kind": "test",
             "isDefault": true

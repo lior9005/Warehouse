@@ -204,7 +204,7 @@ void WareHouse::advanceOrder(Order* order){
         }
         pendingOrders.erase(it);
         order->setStatus(OrderStatus::COLLECTING);
-        inProcessOrders.push_back(order->clone());
+        inProcessOrders.push_back(order);
     }
 
     //If the order is collecting 
@@ -218,7 +218,7 @@ void WareHouse::advanceOrder(Order* order){
         if (it != pendingOrders.end()) {
             pendingOrders.erase(it);
             order->setStatus(OrderStatus::DELIVERING);
-            inProcessOrders.push_back(order->clone());
+            inProcessOrders.push_back(order);
         }
         //if the order is inProcess and collecting, move it to pendingOrders
         else {
@@ -227,7 +227,7 @@ void WareHouse::advanceOrder(Order* order){
                 it++;
             }
             inProcessOrders.erase(it);
-            pendingOrders.push_back(order->clone());
+            pendingOrders.push_back(order);
         }
     }
     //If the order is delivering and inProcess, move it to completedOrders and change it status to COMPLETED
@@ -238,7 +238,7 @@ void WareHouse::advanceOrder(Order* order){
         }
         inProcessOrders.erase(it);
         order->setStatus(OrderStatus::COMPLETED);
-        completedOrders.push_back(order->clone());
+        completedOrders.push_back(order);
     }
 }
 
@@ -252,7 +252,6 @@ void WareHouse::deleteVolunteer(Volunteer* volunteer){
 
 void WareHouse::close() {
     isOpen = false;
-    delete this;
 }
 
 void WareHouse::open() {
@@ -310,8 +309,9 @@ void WareHouse::open() {
         }
         else if (words[0] == "backup") {
             BaseAction* backup = new BackupWareHouse();
+            addAction(backup);
             backup->act(*this);
-            addAction(backup);            
+                        
         }
         else if (words[0] == "restore") {
             BaseAction* restore = new RestoreWareHouse();
@@ -389,7 +389,7 @@ WareHouse& WareHouse::operator=(const WareHouse& other){
         for (Customer* customer : customers) {
             delete(customer);
         }
-        actionsLog.clear();
+        customers.clear();
         for (Customer* customer : other.customers) {
             customers.push_back(customer->clone());
         }       
@@ -480,3 +480,6 @@ int WareHouse::getOrdersCounter() const{
     return orderCounter;
 }
 
+vector<Order*> &WareHouse::getInProcessOrdersList(){
+    return inProcessOrders;
+}
