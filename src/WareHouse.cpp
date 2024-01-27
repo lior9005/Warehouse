@@ -32,8 +32,6 @@ WareHouse::WareHouse(const string &configFilePath)
 
         // Check the type of entry (customer or volunteer)
         if (tokens[0] == "customer") {
-            customerCounter++;
-
             // Check if the customer is a soldier
             if (tokens[2] == "soldier") {
                 SoldierCustomer *newCustomer = new SoldierCustomer{
@@ -53,11 +51,10 @@ WareHouse::WareHouse(const string &configFilePath)
                 };
                 customers.push_back(newCustomer);
             }
-
+            customerCounter++;
         }
 
         else {
-            volunteerCounter++;
             // Parse volunteer information
 
             if (tokens[2] == "collector") {
@@ -96,6 +93,7 @@ WareHouse::WareHouse(const string &configFilePath)
                 };
                 volunteers.push_back(newVolunteer);
             }
+            volunteerCounter++;
         }
     }
     // Close the file
@@ -197,40 +195,56 @@ const Order &WareHouse::getOrder(int orderId) const {
 }
 
 void WareHouse::advanceOrder(Order* order){
+
+    //If the order is pending and in pending, move it to inProcessOrders and change it status to COLLECTING
     if(order->getStatus() == OrderStatus::PENDING){
         auto it = pendingOrders.begin();
-        while (it != pendingOrders.end() && *it != order) {
+        while (it != pendingOrders.end() && (*it)->getId() != order->getId()) {
             it++;
         }
         pendingOrders.erase(it);
         order->setStatus(OrderStatus::COLLECTING);
-        inProcessOrders.push_back(order);
+        inProcessOrders.push_back(order->clone());
     }
+
+    //If the order is collecting 
     else if(order->getStatus() == OrderStatus::COLLECTING){
         auto it = pendingOrders.begin();
-        while (it != pendingOrders.end() && *it != order) {
+
+        //if the order is pending and collecting, move it to inProcessOrders and change it status to DELIVERING
+        while (it != pendingOrders.end() && (*it)->getId() != order->getId()) {
             it++;
         }
         if (it != pendingOrders.end()) {
             pendingOrders.erase(it);
-            inProcessOrders.push_back(order);
+            order->setStatus(OrderStatus::DELIVERING);
+            inProcessOrders.push_back(order->clone());
         }
-        order->setStatus(OrderStatus::DELIVERING);
+        //if the order is inProcess and collecting, move it to pendingOrders
+        else {
+            it = inProcessOrders.begin();
+            while (it != inProcessOrders.end() && (*it)->getId() != order->getId()) {
+                it++;
+            }
+            inProcessOrders.erase(it);
+            pendingOrders.push_back(order->clone());
+        }
     }
+    //If the order is delivering and inProcess, move it to completedOrders and change it status to COMPLETED
     else{
         auto it = inProcessOrders.begin();
-        while (it != inProcessOrders.end() && *it != order) {
+        while (it != inProcessOrders.end() && (*it)->getId() != order->getId()) {
             it++;
         }
         inProcessOrders.erase(it);
-        completedOrders.push_back(order);
         order->setStatus(OrderStatus::COMPLETED);
+        completedOrders.push_back(order->clone());
     }
 }
 
 void WareHouse::deleteVolunteer(Volunteer* volunteer){
         auto it = volunteers.begin();
-        while (it != volunteers.end() && *it != volunteer) {
+        while (it != volunteers.end() && (*it)->getId() != volunteer->getId()) {
             it++;
         }
         volunteers.erase(it);
@@ -449,3 +463,20 @@ void WareHouse:: printAllOrders(){
         cout << "OrderID:" << order->getId() << ", CustomerID: " << order->getCustomerId() << ", OrderStatus: " << order->getStatusString() << endl;
     }
 }
+
+vector<Volunteer*> &WareHouse::getVolunteersList(){
+    return volunteers;
+}
+
+vector<Order*> &WareHouse::getPendingOrdersList(){
+    return pendingOrders;
+}
+
+int WareHouse::getCustomerCounter() const{
+    return customerCounter;
+}
+
+int WareHouse::getOrdersCounter() const{
+    return orderCounter;
+}
+

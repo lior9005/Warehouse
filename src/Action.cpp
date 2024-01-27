@@ -35,23 +35,24 @@ void SimulateStep::act(WareHouse &wareHouse) {
     while (stepsToPerform > 0) {
     
         //phase 1 - iterate over all pending orders and check if there is a volunteer that can take the order
-        for (Order *order : wareHouse.getPendingOrdersList()){
+        vector<Order*> &pendingOrders = wareHouse.getPendingOrdersList();
+        for (Order *order :pendingOrders){
+
+            //who needs to take the order
             if (order->getStatus() == OrderStatus::PENDING){
                 for (Volunteer *volunteer : wareHouse.getVolunteersList()){
-                    if (typeid(*volunteer) == typeid(CollectorVolunteer) && volunteer->canTakeOrder(*order)){
+                    if (((typeid(*volunteer) == typeid(CollectorVolunteer)) || (typeid(*volunteer) == typeid(LimitedCollectorVolunteer)))  && (volunteer->canTakeOrder(*order))){
                         volunteer->acceptOrder(*order);
-                        order->setStatus(OrderStatus::COLLECTING);
                         order->setCollectorId(volunteer->getId());
-                                 
+                        wareHouse.advanceOrder(order);
                         break;
                     }
                 }
             }
             else if (order->getStatus() == OrderStatus::COLLECTING){
                 for (Volunteer *volunteer : wareHouse.getVolunteersList()){
-                    if (typeid(*volunteer) == typeid(DriverVolunteer) && volunteer->canTakeOrder(*order)){
+                    if (((typeid(*volunteer) == typeid(DriverVolunteer)) || (typeid(*volunteer) == typeid(LimitedDriverVolunteer)))  && (volunteer->canTakeOrder(*order))){
                         volunteer->acceptOrder(*order);
-                        order->setStatus(OrderStatus::DELIVERING);
                         order->setDriverId(volunteer->getId());
                         wareHouse.advanceOrder(order);          
                         break;
@@ -67,11 +68,11 @@ void SimulateStep::act(WareHouse &wareHouse) {
 
         //phase 3 - check if there are orders that are completed
         for (Volunteer *volunteer : wareHouse.getVolunteersList()){
-            if (!(volunteer->isBusy())){
+            if (!(volunteer->isBusy()) && (volunteer->getCompletedOrderId() != NO_ORDER)){
                 Order order = wareHouse.getOrder(volunteer->getCompletedOrderId());
                 wareHouse.advanceOrder(&order);
+                volunteer->restartCompletedOrderId();
                 }
-            }
         }
 
         //phase 4 - delete unnecessary volunteers
@@ -82,11 +83,12 @@ void SimulateStep::act(WareHouse &wareHouse) {
             }
         }    
         stepsToPerform--;
-    complete();
+        complete();
+    }
 }
 
 std::string SimulateStep::toString() const {
-    return "SimulateStep" + std::to_string(numOfSteps) + statusToString();
+    return "SimulateStep " + std::to_string(numOfSteps) +" "+ statusToString();
 }
 
 SimulateStep *SimulateStep::clone() const {
@@ -98,10 +100,10 @@ AddOrder::AddOrder(int id) : customerId(id) {}
 
 void AddOrder::act(WareHouse &wareHouse){
     if (wareHouse.getCustomerCounter() < customerId || wareHouse.getCustomer(customerId).canMakeOrder() == false){
-        error("ERROR: Cannot place this order");
+        error("Cannot place this order");
     }
     else {
-        Order* newOrder = new Order((wareHouse.getOrdersCounter()+1),customerId, wareHouse.getCustomer(customerId).getCustomerDistance());
+        Order* newOrder = new Order((wareHouse.getOrdersCounter()),customerId, wareHouse.getCustomer(customerId).getCustomerDistance());
         wareHouse.addOrder(newOrder);
         complete();
     }
@@ -112,7 +114,7 @@ AddOrder *AddOrder::clone() const {
 }
 
 string AddOrder::toString() const {
-    return "Order " + std::to_string(customerId) + statusToString();
+    return "Order " + std::to_string(customerId) +" "+ statusToString();
 }
 
 //ADD CUSTOMER
@@ -136,7 +138,7 @@ AddCustomer* AddCustomer::clone() const {
 }
 
 string AddCustomer::toString() const {
-    return "Customer " + customerName + typeToString() + std::to_string(distance) + std::to_string(maxOrders) + statusToString();
+    return "Customer " + customerName + typeToString() +" "+ std::to_string(distance) +" "+ std::to_string(maxOrders) +" "+ statusToString();
 }
 
 string AddCustomer::typeToString() const {
@@ -167,7 +169,7 @@ PrintOrderStatus* PrintOrderStatus ::clone() const {
 }
 
 string PrintOrderStatus::toString() const {
-    return "OrderStatus " + std::to_string(orderId) + statusToString();
+    return "OrderStatus " + std::to_string(orderId) +" "+ statusToString();
 }
 
 //PrintCustomerStatus
@@ -179,13 +181,13 @@ void PrintCustomerStatus::act(WareHouse &wareHouse){
     }
     else {
         const Customer &customer = wareHouse.getCustomer(customerId);
-        string customerStatus = "CustomerID:" + std::to_string(customerId) + "\n";
+        string customerStatus = "CustomerID: " + std::to_string(customerId) + "\n";
         for (int orderId : customer.getOrdersIds()) {
-          customerStatus += "OrderID:" + std::to_string(orderId) + "/n";
+          customerStatus += "OrderID: " + std::to_string(orderId) + "\n";
           const Order &order = wareHouse.getOrder(orderId);
-          customerStatus += "OrderStatus:" + order.getStatusString() + "/n";
+          customerStatus += "OrderStatus: " + order.getStatusString() + "\n";
         }
-        customerStatus += "numOrdersLeft" + std::to_string(customer.getMaxOrders());
+        customerStatus += "numOrdersLeft: " + std::to_string(customer.getMaxOrders()-customer.getOrdersIds().size());
         cout << customerStatus << endl; 
         complete();
     }
@@ -196,7 +198,7 @@ PrintCustomerStatus *PrintCustomerStatus::clone() const {
 }
 
 string PrintCustomerStatus::toString() const{
-    return "customerStatus " + std::to_string(customerId) + statusToString();
+    return "customerStatus " + std::to_string(customerId) +" "+ statusToString();
 }
 
 //PrintVolunteerStatus
@@ -218,7 +220,7 @@ PrintVolunteerStatus *PrintVolunteerStatus::clone() const {
 }
 
 string PrintVolunteerStatus::toString() const {
-    return "VolunteerStatus " + std::to_string(volunteerId) + statusToString();
+    return "VolunteerStatus " + std::to_string(volunteerId) +" "+ statusToString();
 }
 
 PrintActionsLog::PrintActionsLog() {}
@@ -236,7 +238,7 @@ PrintActionsLog* PrintActionsLog::clone() const{
 }
 
 string PrintActionsLog::toString() const{
-    return "PrintActionsLog" + statusToString();
+    return "log " + statusToString();
 }
 
 Close::Close() {}
@@ -252,7 +254,7 @@ Close* Close::clone() const {
 }
 
 string Close::toString() const {
-    return "Close" + statusToString();
+    return "Close " + statusToString();
 }
 
 BackupWareHouse::BackupWareHouse() {}
@@ -270,7 +272,7 @@ BackupWareHouse* BackupWareHouse::clone() const {
 }
 
 string BackupWareHouse::toString() const {
-    return "BackupWareHouse" + statusToString();
+    return "BackupWareHouse " + statusToString();
 }
 
 //RestoreWareHouse
@@ -287,7 +289,7 @@ void RestoreWareHouse::act(WareHouse &wareHouse){
 }
 
 string RestoreWareHouse::toString() const {
-    return "RestoreWareHouse" + statusToString();
+    return "RestoreWareHouse " + statusToString();
 }
 
 RestoreWareHouse* RestoreWareHouse::clone() const {
