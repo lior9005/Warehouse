@@ -42,9 +42,8 @@ string Customer::toString() const {
    return std::to_string(id) + " " + name + " " + std::to_string(locationDistance) + " " + std::to_string(maxOrders);
 }
 
-
 SoldierCustomer::SoldierCustomer(int id, const string &name, int locationDistance, int maxOrders)
-    : Customer(id, name, locationDistance, maxOrders) {}
+     : Customer(id, name, locationDistance, maxOrders) {}
 
 SoldierCustomer *SoldierCustomer::clone() const {
     return new SoldierCustomer(*this);

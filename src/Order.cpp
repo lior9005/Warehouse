@@ -44,10 +44,14 @@ int Order::getDistance() const {
 }
 
 const std::string Order::toString() const {
+    return "OrderId: " + std::to_string(id) + "\n" +
+           "OrderStatus: " + getStatusString() + "\n" +
+           "CustomerID: " + std::to_string(customerId) + "\n" +
+           "Collector: " + (collectorId == -1 ? "None" : std::to_string(collectorId)) + "\n" +
+           "Driver: " + (driverId == -1 ? "None" : std::to_string(driverId));
+}
+
+const std::string Order::getStatusString() const {
     std::string orderStatus[] = {"PENDING", "COLLECTING", "DELIVERING", "COMPLETED"};
-    return "OrderId: " + std::to_string(id) +
-           ", OrderStatus: " + orderStatus[static_cast<int>(status)] +
-           ", CustomerID: " + std::to_string(customerId) +
-           ", Collector: " + std::to_string(collectorId) +
-           ", Driver: " + std::to_string(driverId);
+    return orderStatus[static_cast<int>(getStatus())];
 }

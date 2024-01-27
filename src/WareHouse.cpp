@@ -147,6 +147,8 @@ const vector<BaseAction*>& WareHouse::getActions() const {
 
 void WareHouse::addOrder(Order* order) {
     pendingOrders.push_back(order);
+    Customer *customer = customers[order->getCustomerId()];
+    customer->addOrder(order->getId());
     orderCounter++;
 }
 
