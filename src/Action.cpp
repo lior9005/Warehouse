@@ -6,6 +6,15 @@ ActionStatus BaseAction::getStatus() const {
     return status;
 }
 
+string BaseAction::statusToString() const{
+    if (status == ActionStatus::COMPLETED){
+        return "COMPLETED";
+    }
+    else {
+        return "ERROR";
+    }
+}
+
 void BaseAction::complete() {
     status = ActionStatus::COMPLETED;
 }
@@ -75,9 +84,9 @@ void SimulateStep::act(WareHouse &wareHouse) {
     complete();
 }
 
-    std::string SimulateStep::toString() const {
-        return "Simulate " + std::to_string(numOfSteps) + " steps";
-    }
+std::string SimulateStep::toString() const {
+    return "SimulateStep" + std::to_string(numOfSteps) + statusToString();
+}
 
 SimulateStep *SimulateStep::clone() const {
     return new SimulateStep(*this);
@@ -102,7 +111,7 @@ AddOrder *AddOrder::clone() const {
 }
 
 string AddOrder::toString() const {
-    return "Adding Order " + std::to_string(customerId);
+    return "Order " + std::to_string(customerId) + statusToString();
 }
 
 //ADD CUSTOMER
@@ -126,7 +135,16 @@ AddCustomer* AddCustomer::clone() const {
 }
 
 string AddCustomer::toString() const {
-    return "Adding Customer " + customerName;
+    return "Customer " + customerName + typeToString() + std::to_string(distance) + std::to_string(maxOrders) + statusToString();
+}
+
+string AddCustomer::typeToString() const {
+    if (customerType == CustomerType::Soldier){
+        return "Soldier";
+    }
+    else {
+        return "Civilian";
+    }
 }
 
 //PrintOrdersStatus
@@ -148,15 +166,13 @@ PrintOrderStatus* PrintOrderStatus ::clone() const {
 }
 
 string PrintOrderStatus::toString() const {
-    return "printing order status " + std::to_string(orderId);
+    return "OrderStatus " + std::to_string(orderId) + statusToString();
 }
 
 //PrintCustomerStatus
 PrintCustomerStatus::PrintCustomerStatus(int customerId) : customerId(customerId) {}
 
-
-
-void PrintCustomerStatus::act(WareHouse &wareHouse){?
+void PrintCustomerStatus::act(WareHouse &wareHouse){
     if (wareHouse.getCustomerCounter() < customerId){
         error("Customer doesn't exist");
     }
@@ -179,7 +195,7 @@ PrintCustomerStatus *PrintCustomerStatus::clone() const {
 }
 
 string PrintCustomerStatus::toString() const{
-    return "printing status of customer " + std::to_string(customerId);
+    return "customerStatus " + std::to_string(customerId) + statusToString();
 }
 
 //PrintVolunteerStatus
@@ -193,4 +209,29 @@ void PrintVolunteerStatus::act(WareHouse &wareHouse){
             return;
         }
     }
+    error("Volunteer doesn't exist");
+}
+
+PrintVolunteerStatus *PrintVolunteerStatus::clone() const {
+    return new PrintVolunteerStatus(*this);
+}
+
+string PrintVolunteerStatus::toString() const {
+    return "VolunteerStatus " + std::to_string(volunteerId) + statusToString();
+}
+
+//RestoreWareHouse
+RestoreWareHouse::RestoreWareHouse() {}
+
+void RestoreWareHouse::act(WareHouse &wareHouse){
+    if (backup == nullptr){
+        error("No backup available");
+    }
+    else {
+        wareHouse = *backup;
+        complete();
+    }
+}
+
+
     

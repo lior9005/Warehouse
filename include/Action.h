@@ -4,6 +4,7 @@
 #include "WareHouse.h"
 using std::string;
 using std::vector;
+extern WareHouse* backup;
 
 enum class ActionStatus{
     COMPLETED, ERROR
@@ -23,7 +24,7 @@ class BaseAction{
         virtual void act(WareHouse& wareHouse)=0;
         virtual string toString() const=0;
         virtual BaseAction* clone() const=0;
-
+        virtual string statusToString() const;
     protected:
         void complete();
         void error(string errorMsg);
@@ -63,6 +64,7 @@ class AddCustomer : public BaseAction {
         void act(WareHouse &wareHouse) override;
         AddCustomer *clone() const override;
         string toString() const override;
+        string typeToString() const;
     private:
         const string customerName;
         const CustomerType customerType;
