@@ -2,7 +2,7 @@
 #include "Action.h"
 
 WareHouse::WareHouse(const string &configFilePath) 
-    : isOpen(false), customerCounter(0), volunteerCounter(0), orderCounter(0){
+    : isOpen(false), actionsLog(), volunteers(), pendingOrders(), inProcessOrders(), completedOrders(), customers(), customerCounter(0), volunteerCounter(0), orderCounter(0){
     
     // Open the file for reading
         std::ifstream file(configFilePath);
@@ -101,7 +101,7 @@ WareHouse::WareHouse(const string &configFilePath)
 }
 
 WareHouse::WareHouse(const WareHouse &other) 
-    : isOpen(other.isOpen), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter), orderCounter(orderCounter){
+    : isOpen(other.isOpen), actionsLog(), volunteers(), pendingOrders(), inProcessOrders(), completedOrders(), customers(), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter), orderCounter(other.orderCounter){
     for (Order* order : other.pendingOrders) {
         pendingOrders.push_back(order->clone());
     }
@@ -122,11 +122,9 @@ WareHouse::WareHouse(const WareHouse &other)
     }
 }
 
-WareHouse::WareHouse(WareHouse&& other) 
-    : isOpen(other.isOpen), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter),
-      orderCounter(other.orderCounter), actionsLog(std::move(other.actionsLog)), volunteers(std::move(other.volunteers)),
-      pendingOrders(std::move(other.pendingOrders)), inProcessOrders(std::move(other.inProcessOrders)),
-      completedOrders(std::move(other.completedOrders)), customers(std::move(other.customers)) {
+WareHouse::WareHouse(WareHouse&& other)
+    :isOpen(other.isOpen), actionsLog(std::move(other.actionsLog)), volunteers(std::move(other.volunteers)), pendingOrders(std::move(other.pendingOrders)), inProcessOrders(std::move(other.inProcessOrders)),
+    completedOrders(std::move(other.completedOrders)), customers(std::move(other.customers)), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter), orderCounter(other.orderCounter){
         other.actionsLog.clear();
         other.volunteers.clear();
         other.pendingOrders.clear();
@@ -169,29 +167,33 @@ const Customer& WareHouse::getCustomer(int customerId) const {
 }
 
 const Volunteer& WareHouse::getVolunteer(int volunteerId) const {
+    Volunteer* volunteerToReturn = nullptr;
     for (Volunteer* volunteer : volunteers) {
         if (volunteer->getId() == volunteerId) {
-            return *volunteer;
+            volunteerToReturn =  volunteer;
         }
     }
+    return *volunteerToReturn;
 }
 
 const Order &WareHouse::getOrder(int orderId) const {
+    Order* orderToReturn = nullptr;
     for (Order* order : pendingOrders) {
         if (order->getId() == orderId) {
-            return *order;
+            orderToReturn =  order;
         }
     }
     for (Order* order : inProcessOrders) {
         if (order->getId() == orderId) {
-            return *order;
+            orderToReturn =  order;
         }
     }
     for (Order* order : completedOrders) {
         if (order->getId() == orderId) {
-            return *order;
+            orderToReturn =  order;
         }
     }
+    return *orderToReturn;
 }
 
 void WareHouse::advanceOrder(Order* order){

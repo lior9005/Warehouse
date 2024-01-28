@@ -38,6 +38,7 @@ class BaseAction{
         virtual string toString() const=0;
         virtual BaseAction* clone() const=0;
         virtual string statusToString() const;
+        virtual ~BaseAction() = default;
     protected:
         void error(string errorMsg);
         string getErrorMsg() const;
