@@ -180,7 +180,7 @@ string PrintOrderStatus::toString() const {
 PrintCustomerStatus::PrintCustomerStatus(int customerId) : customerId(customerId) {}
 
 void PrintCustomerStatus::act(WareHouse &wareHouse){
-    if (wareHouse.getCustomerCounter() < customerId){
+    if (wareHouse.getCustomerCounter()-1 < customerId){
         error("Customer doesn't exist");
     }
     else {
