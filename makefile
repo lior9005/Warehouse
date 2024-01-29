@@ -10,7 +10,7 @@ SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%.o,$(SOURCES))
 
 # Name of the final executable
-EXECUTABLE = $(BIN_DIR)/main
+EXECUTABLE = $(BIN_DIR)/warehouse
 
 all: $(EXECUTABLE) 
 	
