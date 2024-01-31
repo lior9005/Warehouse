@@ -291,7 +291,7 @@ void RestoreWareHouse::act(WareHouse &wareHouse){
 }
 
 string RestoreWareHouse::toString() const {
-    return "RestoreWareHouse " + statusToString();
+    return "Restore " + statusToString();
 }
 
 RestoreWareHouse* RestoreWareHouse::clone() const {
