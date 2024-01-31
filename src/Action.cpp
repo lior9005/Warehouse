@@ -275,7 +275,7 @@ BackupWareHouse* BackupWareHouse::clone() const {
 }
 
 string BackupWareHouse::toString() const {
-    return "BackupWareHouse " + statusToString();
+    return "Backup " + statusToString();
 }
 
 //RestoreWareHouse
