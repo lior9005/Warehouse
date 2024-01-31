@@ -2,7 +2,7 @@
     "makefile.launchConfigurations": [
         {
             "cwd": "/root/ass_1/bin",
-            "binaryPath": "/root/ass_1/bin/main",
+            "binaryPath": "/root/ass_1/bin/warehouse",
             "binaryArgs": ["/root/ass_1/bin/rest/configFileExample.txt"]
         }
     ],
