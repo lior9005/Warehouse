@@ -16,6 +16,10 @@ string BaseAction::statusToString() const{
     }
 }
 
+void BaseAction::complete() {
+    status = ActionStatus::COMPLETED;
+}
+
 void BaseAction::error(std::string errorMsg) {
     status = ActionStatus::ERROR;
     cout << "Error: " << errorMsg << endl;
@@ -33,7 +37,7 @@ void SimulateStep::act(WareHouse &wareHouse) {
     
         //phase 1 - iterate over all pending orders and check if there is a volunteer that can take the order
         vector<Order*> &pendingOrders = wareHouse.getPendingOrdersList();
-        for(int i=0; i<pendingOrders.size(); i++){
+        for(std::vector<Order*>::size_type i=0; i<pendingOrders.size(); i++){
             //who needs to take the order
             if (pendingOrders[i]->getStatus() == OrderStatus::PENDING){
                 for (Volunteer *volunteer : wareHouse.getVolunteersList()){
@@ -69,7 +73,7 @@ void SimulateStep::act(WareHouse &wareHouse) {
             if (!(volunteer->isBusy()) && (volunteer->getCompletedOrderId() != NO_ORDER)){
                 int orderId = volunteer->getCompletedOrderId();
                 vector<Order*> &inProcessOrders = wareHouse.getInProcessOrdersList();
-                for(int i=0; i<inProcessOrders.size(); i++){
+                for(std::vector<Order*>::size_type i=0; i<inProcessOrders.size(); i++){
                     if (inProcessOrders[i]->getId() == orderId){
                         wareHouse.advanceOrder(inProcessOrders[i]);
                         i--;
@@ -82,7 +86,7 @@ void SimulateStep::act(WareHouse &wareHouse) {
 
         //phase 4 - delete unnecessary volunteers
         vector<Volunteer*> &volunteers = wareHouse.getVolunteersList();
-        for(int i=0; i<volunteers.size(); i++){
+        for(std::vector<Volunteer*>::size_type i=0; i<volunteers.size(); i++){
             Volunteer* volunteer = volunteers[i];
             if ((!(volunteer->hasOrdersLeft())) && (!(volunteer->isBusy()))){
                 wareHouse.deleteVolunteer(volunteer);
@@ -125,7 +129,7 @@ string AddOrder::toString() const {
 
 //ADD CUSTOMER
 AddCustomer::AddCustomer(const string &customerName, const string &customerType, int distance, int maxOrders) 
-: customerName(customerName), distance(distance), maxOrders(maxOrders), customerType(customerType == "soldier" ? CustomerType::Soldier : CustomerType::Civilian) {}
+: customerName(customerName), customerType(customerType == "soldier" ? CustomerType::Soldier : CustomerType::Civilian), distance(distance), maxOrders(maxOrders) {}
 
 void AddCustomer::act(WareHouse &wareHouse){
     if (CustomerType::Soldier == customerType){
