@@ -40,6 +40,7 @@ class BaseAction{
         virtual string statusToString() const;
         virtual ~BaseAction() = default;
     protected:
+        void complete();
         void error(string errorMsg);
         string getErrorMsg() const;
 

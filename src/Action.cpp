@@ -16,6 +16,10 @@ string BaseAction::statusToString() const{
     }
 }
 
+void BaseAction::complete() {
+    status = ActionStatus::COMPLETED;
+}
+
 void BaseAction::error(std::string errorMsg) {
     status = ActionStatus::ERROR;
     cout << "Error: " << errorMsg << endl;
@@ -271,7 +275,7 @@ BackupWareHouse* BackupWareHouse::clone() const {
 }
 
 string BackupWareHouse::toString() const {
-    return "BackupWareHouse " + statusToString();
+    return "Backup " + statusToString();
 }
 
 //RestoreWareHouse
@@ -287,7 +291,7 @@ void RestoreWareHouse::act(WareHouse &wareHouse){
 }
 
 string RestoreWareHouse::toString() const {
-    return "RestoreWareHouse " + statusToString();
+    return "Restore " + statusToString();
 }
 
 RestoreWareHouse* RestoreWareHouse::clone() const {

@@ -45,7 +45,6 @@ class WareHouse {
         vector<Order*> &getInProcessOrdersList();
         int getCustomerCounter() const;
         int getOrdersCounter() const;
-        //My functions
         void printAllCustomers();
         void printAllVolunteers();
         void printAllOrders();
