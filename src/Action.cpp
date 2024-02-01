@@ -99,7 +99,7 @@ void SimulateStep::act(WareHouse &wareHouse) {
 }
 
 string SimulateStep::toString() const {
-    return "SimulateStep " + std::to_string(numOfSteps) +" "+ statusToString();
+    return "simulateStep " + std::to_string(numOfSteps) +" "+ statusToString();
 }
 
 SimulateStep *SimulateStep::clone() const {
@@ -124,7 +124,7 @@ AddOrder *AddOrder::clone() const {
 }
 
 string AddOrder::toString() const {
-    return "Order " + std::to_string(customerId) +" "+ statusToString();
+    return "order " + std::to_string(customerId) +" "+ statusToString();
 }
 
 //ADD CUSTOMER
@@ -147,7 +147,7 @@ AddCustomer* AddCustomer::clone() const {
 }
 
 string AddCustomer::toString() const {
-    return "Customer " + customerName +" "+ typeToString() +" "+ std::to_string(distance) +" "+ std::to_string(maxOrders) +" "+ statusToString();
+    return "customer " + customerName +" "+ typeToString() +" "+ std::to_string(distance) +" "+ std::to_string(maxOrders) +" "+ statusToString();
 }
 
 string AddCustomer::typeToString() const {
@@ -177,7 +177,7 @@ PrintOrderStatus* PrintOrderStatus ::clone() const {
 }
 
 string PrintOrderStatus::toString() const {
-    return "OrderStatus " + std::to_string(orderId) +" "+ statusToString();
+    return "orderStatus " + std::to_string(orderId) +" "+ statusToString();
 }
 
 //PrintCustomerStatus
@@ -226,7 +226,7 @@ PrintVolunteerStatus *PrintVolunteerStatus::clone() const {
 }
 
 string PrintVolunteerStatus::toString() const {
-    return "VolunteerStatus " + std::to_string(volunteerId) +" "+ statusToString();
+    return "volunteerStatus " + std::to_string(volunteerId) +" "+ statusToString();
 }
 
 PrintActionsLog::PrintActionsLog() {}
@@ -258,7 +258,7 @@ Close* Close::clone() const {
 }
 
 string Close::toString() const {
-    return "Close " + statusToString();
+    return "close " + statusToString();
 }
 
 BackupWareHouse::BackupWareHouse() {}
@@ -275,7 +275,7 @@ BackupWareHouse* BackupWareHouse::clone() const {
 }
 
 string BackupWareHouse::toString() const {
-    return "Backup " + statusToString();
+    return "backup " + statusToString();
 }
 
 //RestoreWareHouse
@@ -291,7 +291,7 @@ void RestoreWareHouse::act(WareHouse &wareHouse){
 }
 
 string RestoreWareHouse::toString() const {
-    return "Restore " + statusToString();
+    return "restore " + statusToString();
 }
 
 RestoreWareHouse* RestoreWareHouse::clone() const {

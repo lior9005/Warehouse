@@ -20,7 +20,6 @@ enum class OrderStatus {
 class Order {
 
     public:
-    //constructor
         Order(int id, int customerId, int distance);
         Order* clone() const;
         int getId() const;
