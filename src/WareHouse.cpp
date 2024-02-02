@@ -125,12 +125,6 @@ WareHouse::WareHouse(const WareHouse &other)
 WareHouse::WareHouse(WareHouse&& other)
     :isOpen(other.isOpen), actionsLog(std::move(other.actionsLog)), volunteers(std::move(other.volunteers)), pendingOrders(std::move(other.pendingOrders)), inProcessOrders(std::move(other.inProcessOrders)),
     completedOrders(std::move(other.completedOrders)), customers(std::move(other.customers)), customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter), orderCounter(other.orderCounter){
-        other.actionsLog.clear();
-        other.volunteers.clear();
-        other.pendingOrders.clear();
-        other.inProcessOrders.clear();
-        other.completedOrders.clear();
-        other.customers.clear();
     }
  
 void WareHouse::start() {
@@ -162,11 +156,11 @@ void WareHouse::addAction(BaseAction* action) {
     actionsLog.push_back(action);
 }
 
-const Customer& WareHouse::getCustomer(int customerId) const {
+Customer& WareHouse::getCustomer(int customerId) const {
     return *customers[customerId];
 }
 
-const Volunteer& WareHouse::getVolunteer(int volunteerId) const {
+Volunteer& WareHouse::getVolunteer(int volunteerId) const {
     Volunteer* volunteerToReturn = nullptr;
     for (Volunteer* volunteer : volunteers) {
         if (volunteer->getId() == volunteerId) {
@@ -176,7 +170,7 @@ const Volunteer& WareHouse::getVolunteer(int volunteerId) const {
     return *volunteerToReturn;
 }
 
-const Order &WareHouse::getOrder(int orderId) const {
+Order &WareHouse::getOrder(int orderId) const {
     Order* orderToReturn = nullptr;
     for (Order* order : pendingOrders) {
         if (order->getId() == orderId) {
