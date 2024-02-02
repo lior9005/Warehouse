@@ -30,9 +30,9 @@ class WareHouse {
         void addCustomer(Customer* customer);
         void addVolunteer(Volunteer* volunteer);
         void addAction(BaseAction* action);
-        const Customer& getCustomer(int customerId) const;
-        const Volunteer& getVolunteer(int volunteerId) const;
-        const Order &getOrder(int orderId) const;
+        Customer& getCustomer(int customerId) const;
+        Volunteer& getVolunteer(int volunteerId) const;
+        Order &getOrder(int orderId) const;
         void close();
         void open();
         ~WareHouse();
