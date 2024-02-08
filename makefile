@@ -12,7 +12,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%.o,$(SOURCES))
 # Name of the final executable
 EXECUTABLE = $(BIN_DIR)/warehouse
 
-all: $(EXECUTABLE) 
+all: clean $(EXECUTABLE) 
 	
 # Linker
 $(EXECUTABLE): $(OBJECTS)
@@ -23,5 +23,5 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@$(BASE_FLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BIN_DIR)/*
+	@find $(BIN_DIR) ! -path "$(BIN_DIR)/rest/*" -type f -delete
 
